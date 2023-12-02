@@ -1,8 +1,8 @@
 import { atom, useAtom, PrimitiveAtom } from "jotai";
 import { splitAtom } from "jotai/utils";
 import { focusAtom } from "jotai-optics";
+import { useState } from "react";
 import { type FormItemText, textImpl } from "./FormItemText";
-import { ReactNode, useState } from "react";
 import { type FormItemRadio, radioImpl } from "./FormItemRadio";
 
 export type FormItemImpl<
@@ -13,11 +13,14 @@ export type FormItemImpl<
 > = {
   type: Type;
   itemType?: ItemType;
-  tryRender: (itemAtom: PrimitiveAtom<FormItem>) => ReactNode;
+  tryRender: (itemAtom: PrimitiveAtom<FormItem>) => React.ReactNode;
   initialValue: ItemType;
 };
 
-const formItemImpls = [textImpl, radioImpl] as const;
+const formItemImpls = [
+  textImpl,
+  radioImpl,
+] as const satisfies readonly FormItemImpl<string, FormItem>[];
 
 type FormSchema = {
   items: FormItem[];
@@ -55,7 +58,13 @@ function App() {
   );
 }
 
-function TwoPane({ left, right }: { left: ReactNode; right: ReactNode }) {
+function TwoPane({
+  left,
+  right,
+}: {
+  left: React.ReactNode;
+  right: React.ReactNode;
+}) {
   return (
     <div className="flex ">
       <div className="w-1/2 outline outline-2 outline-blue-300">{left}</div>
@@ -138,6 +147,6 @@ function AddButton() {
 function ItemView({ itemAtom }: { itemAtom: PrimitiveAtom<FormItem> }) {
   return formItemImpls
     .map((impl) => impl.tryRender(itemAtom))
-    .reduce((acc, elm) => acc ?? elm, null as ReactNode);
+    .reduce((acc, elm) => acc ?? elm, null as React.ReactNode);
 }
 export default App;

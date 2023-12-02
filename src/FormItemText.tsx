@@ -1,6 +1,6 @@
 import { useAtom, PrimitiveAtom } from "jotai";
 import { FormItem, FormItemImpl } from "./App";
-import { getNarrowedAtom } from "./getNarrowedAtom";
+import { castAtomType } from "./castAtomType";
 
 export type FormItemText = {
   type: "text";
@@ -15,7 +15,7 @@ const initialValueText = {
 } as const satisfies FormItemText;
 
 function tryRenderFormItemText(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = getNarrowedAtom(itemAtom, "text");
+  const anAtom = castAtomType<FormItemText>("text", itemAtom);
   if (!anAtom) return null;
   return <ItemViewText itemAtom={anAtom} />;
 }

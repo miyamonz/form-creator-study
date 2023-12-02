@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useAtom, PrimitiveAtom } from "jotai";
 import { FormItem, FormItemImpl } from "./App";
 import { focusAtom } from "jotai-optics";
-import { getNarrowedAtom } from "./getNarrowedAtom";
 import { splitAtom } from "jotai/utils";
+import { castAtomType } from "./castAtomType";
 
 export type FormItemRadio = {
   type: "radio";
@@ -20,7 +20,7 @@ const initialValueRadio = {
 } as const satisfies FormItemRadio;
 
 function tryRenderFormItemRadio(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = getNarrowedAtom(itemAtom, "radio");
+  const anAtom = castAtomType<FormItemRadio>("radio", itemAtom);
   if (!anAtom) return null;
   return <ItemViewRadio itemAtom={anAtom} />;
 }
