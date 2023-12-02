@@ -5,22 +5,24 @@ import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import { castAtomType } from "./castAtomType";
 
+const typeName = "radio" as const;
+
 export type FormItemRadio = {
-  type: "radio";
+  type: typeof typeName;
   title: string;
   description: string;
   choices: string[];
 };
 
 const initialValue = {
-  type: "radio",
+  type: typeName,
   title: "",
   description: "",
   choices: ["選択肢1"] as string[],
 } as const satisfies FormItemRadio;
 
 function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = castAtomType<FormItemRadio>("radio", itemAtom);
+  const anAtom = castAtomType<FormItemRadio>(typeName, itemAtom);
   if (!anAtom) return null;
   return <ItemViewRadio itemAtom={anAtom} />;
 }
@@ -107,7 +109,7 @@ function ChoicesView({
 }
 
 export const radioImpl = {
-  type: "radio",
+  type: typeName,
   tryRender,
   initialValue,
-} as const satisfies FormItemImpl<"radio", FormItemRadio>;
+} as const satisfies FormItemImpl<typeof typeName, FormItemRadio>;

@@ -2,20 +2,21 @@ import { useAtom, PrimitiveAtom } from "jotai";
 import { FormItem, FormItemImpl } from "./App";
 import { castAtomType } from "./castAtomType";
 
+const typeName = "text" as const;
 export type FormItemText = {
-  type: "text";
+  type: typeof typeName;
   title: string;
   description: string;
 };
 
 const initialValue = {
-  type: "text",
+  type: typeName,
   title: "",
   description: "",
 } as const satisfies FormItemText;
 
 function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = castAtomType<FormItemText>("text", itemAtom);
+  const anAtom = castAtomType<FormItemText>(typeName, itemAtom);
   if (!anAtom) return null;
   return <ItemViewText itemAtom={anAtom} />;
 }
@@ -50,7 +51,7 @@ function ItemViewText({ itemAtom }: { itemAtom: PrimitiveAtom<FormItemText> }) {
 }
 
 export const textImpl = {
-  type: "text",
+  type: typeName,
   tryRender,
   initialValue,
-} as const satisfies FormItemImpl<"text", FormItemText>;
+} as const satisfies FormItemImpl<typeof typeName, FormItemText>;
