@@ -5,9 +5,9 @@ import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import { castAtomType } from "./castAtomType";
 
-const typeName = "radio" as const;
+const typeName = "checkbox" as const;
 
-export type FormItemRadio = {
+export type FormItemCheckbox = {
   type: typeof typeName;
   title: string;
   description: string;
@@ -19,18 +19,18 @@ const initialValue = {
   title: "タイトル",
   description: "説明",
   choices: ["選択肢1"] as string[],
-} as const satisfies FormItemRadio;
+} as const satisfies FormItemCheckbox;
 
 function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = castAtomType<FormItemRadio>(typeName, itemAtom);
+  const anAtom = castAtomType<FormItemCheckbox>(typeName, itemAtom);
   if (!anAtom) return null;
-  return <ItemViewRadio itemAtom={anAtom} />;
+  return <ItemViewCheckbox itemAtom={anAtom} />;
 }
 
-function ItemViewRadio({
+function ItemViewCheckbox({
   itemAtom,
 }: {
-  itemAtom: PrimitiveAtom<FormItemRadio>;
+  itemAtom: PrimitiveAtom<FormItemCheckbox>;
 }) {
   const [item, setItem] = useAtom(itemAtom);
 
@@ -41,7 +41,7 @@ function ItemViewRadio({
   return (
     // text form with title and description, add tailwind classes
     <div className="border-2 border-black p-2">
-      <h3 className="text-xl">radio</h3>
+      <h3 className="text-xl">checkbox</h3>
       <input
         className="text-2xl"
         type="text"
@@ -107,21 +107,19 @@ function ChoicesView({
     </div>
   );
 }
-
 function tryRenderUser(schema: FormItem) {
   if (schema.type !== typeName) return null;
   return <ViewForUser schema={schema} />;
 }
-function ViewForUser({ schema }: { schema: FormItemRadio }) {
+function ViewForUser({ schema }: { schema: FormItemCheckbox }) {
   return (
     <div>
       <h1>{schema.title}</h1>
       <p>{schema.description}</p>
       <div>
         {schema.choices.map((choice) => (
-          // todo
           <div key={choice}>
-            <input type="radio" id="aaa" name="aaa" value={choice} />
+            <input type="checkbox" />
             <label>{choice}</label>
           </div>
         ))}
@@ -129,10 +127,9 @@ function ViewForUser({ schema }: { schema: FormItemRadio }) {
     </div>
   );
 }
-
-export const radioImpl = {
+export const checkboxImpl = {
   type: typeName,
   tryRender,
   initialValue,
   tryRenderUser,
-} as const satisfies FormItemImpl<typeof typeName, FormItemRadio>;
+} as const satisfies FormItemImpl<typeof typeName, FormItemCheckbox>;

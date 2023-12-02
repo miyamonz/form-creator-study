@@ -11,8 +11,8 @@ export type FormItemText = {
 
 const initialValue = {
   type: typeName,
-  title: "",
-  description: "",
+  title: "タイトル",
+  description: "説明",
 } as const satisfies FormItemText;
 
 function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
@@ -50,8 +50,23 @@ function ItemViewText({ itemAtom }: { itemAtom: PrimitiveAtom<FormItemText> }) {
   );
 }
 
+function tryRenderUser(schema: FormItem) {
+  if (schema.type !== typeName) return null;
+  return <ViewForUser schema={schema} />;
+}
+function ViewForUser({ schema }: { schema: FormItemText }) {
+  return (
+    <div>
+      <h1>{schema.title}</h1>
+      <p>{schema.description}</p>
+      <input type="text" />
+    </div>
+  );
+}
+
 export const textImpl = {
   type: typeName,
   tryRender,
   initialValue,
+  tryRenderUser,
 } as const satisfies FormItemImpl<typeof typeName, FormItemText>;
