@@ -8,13 +8,13 @@ export type FormItemText = {
   description: string;
 };
 
-const initialValueText = {
+const initialValue = {
   type: "text",
   title: "",
   description: "",
 } as const satisfies FormItemText;
 
-function tryRenderFormItemText(itemAtom: PrimitiveAtom<FormItem>) {
+function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
   const anAtom = castAtomType<FormItemText>("text", itemAtom);
   if (!anAtom) return null;
   return <ItemViewText itemAtom={anAtom} />;
@@ -51,7 +51,6 @@ function ItemViewText({ itemAtom }: { itemAtom: PrimitiveAtom<FormItemText> }) {
 
 export const textImpl = {
   type: "text",
-  itemType: initialValueText,
-  tryRender: tryRenderFormItemText,
-  initialValue: initialValueText,
+  tryRender,
+  initialValue,
 } as const satisfies FormItemImpl<"text", FormItemText>;

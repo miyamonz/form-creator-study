@@ -12,14 +12,14 @@ export type FormItemRadio = {
   choices: string[];
 };
 
-const initialValueRadio = {
+const initialValue = {
   type: "radio",
   title: "",
   description: "",
   choices: ["選択肢1"] as string[],
 } as const satisfies FormItemRadio;
 
-function tryRenderFormItemRadio(itemAtom: PrimitiveAtom<FormItem>) {
+function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
   const anAtom = castAtomType<FormItemRadio>("radio", itemAtom);
   if (!anAtom) return null;
   return <ItemViewRadio itemAtom={anAtom} />;
@@ -108,7 +108,6 @@ function ChoicesView({
 
 export const radioImpl = {
   type: "radio",
-  itemType: initialValueRadio,
-  tryRender: tryRenderFormItemRadio,
-  initialValue: initialValueRadio,
+  tryRender,
+  initialValue,
 } as const satisfies FormItemImpl<"radio", FormItemRadio>;
