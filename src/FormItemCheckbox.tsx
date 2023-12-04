@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useAtom, PrimitiveAtom } from "jotai";
-import { FormItem, FormItemImpl } from "./App";
+import { FormItem, FormItemImpl } from "./formSchemaAtom";
 import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import { castAtomType } from "./castAtomType";

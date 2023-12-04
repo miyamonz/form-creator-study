@@ -1,5 +1,5 @@
 import { PrimitiveAtom, getDefaultStore } from "jotai";
-import { FormItem } from "./App";
+import { FormItem } from "./formSchemaAtom";
 
 export function castAtomType<Item extends FormItem>(
   type: Item["type"],

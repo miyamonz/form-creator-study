@@ -1,12 +1,12 @@
 import { useAtom, PrimitiveAtom } from "jotai";
 import { useState } from "react";
-import { itemAtomsAtom, formItemImpls, FormItem } from "./App";
+import { itemAtomsAtom, formItemImpls, FormItem } from "./formSchemaAtom";
 
 export function SchemaEditor() {
   return <ItemsView />;
 }
 function ItemsView() {
-  const [itemAtoms, dispatch] = useAtom(itemAtomsAtom);
+  const [itemAtoms] = useAtom(itemAtomsAtom);
 
   return (
     <div>
@@ -15,22 +15,28 @@ function ItemsView() {
         {itemAtoms.map((item, index) => (
           <div key={index} className="relative [&:not(:first-child)]:mt-2">
             <ItemView itemAtom={item} />
-            {/* remove button on top right */}
-            <div className="absolute top-0 right-0 w-8 aspect-square">
-              <button
-                className=" bg-red-500 hover:bg-red-700 text-white font-bold  w-full h-full"
-                onClick={() => {
-                  dispatch({ type: "remove", atom: item });
-                }}
-              >
-                ✕
-              </button>
+            <div className="absolute top-0 right-0">
+              <RemoveButton itemAtom={item} />
             </div>
           </div>
         ))}
       </ul>
       <AddButton />
     </div>
+  );
+}
+function RemoveButton({ itemAtom }: { itemAtom: PrimitiveAtom<FormItem> }) {
+  const [, dispatch] = useAtom(itemAtomsAtom);
+
+  return (
+    <button
+      className=" bg-red-500 hover:bg-red-700 text-white font-bold w-8 aspect-square"
+      onClick={() => {
+        dispatch({ type: "remove", atom: itemAtom });
+      }}
+    >
+      ✕
+    </button>
   );
 }
 function AddButton() {

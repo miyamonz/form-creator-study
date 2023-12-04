@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useAtom, PrimitiveAtom } from "jotai";
-import { FormItem, FormItemImpl } from "./App";
+import { FormItem, FormItemImpl } from "./formSchemaAtom";
 import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import { castAtomType } from "./castAtomType";
@@ -118,9 +118,9 @@ function ViewForUser({ schema }: { schema: FormItemRadio }) {
       <h1>{schema.title}</h1>
       <p>{schema.description}</p>
       <div>
-        {schema.choices.map((choice) => (
+        {schema.choices.map((choice, i) => (
           // todo
-          <div key={choice}>
+          <div key={i}>
             <input type="radio" id="aaa" name="aaa" value={choice} />
             <label>{choice}</label>
           </div>

@@ -1,5 +1,5 @@
 import { useAtom, PrimitiveAtom } from "jotai";
-import { FormItem, FormItemImpl } from "./App";
+import { FormItem, FormItemImpl } from "./formSchemaAtom";
 import { castAtomType } from "./castAtomType";
 
 const typeName = "text" as const;
