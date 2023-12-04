@@ -1,9 +1,8 @@
-import { atom, PrimitiveAtom } from "jotai";
-import { splitAtom } from "jotai/utils";
-import { focusAtom } from "jotai-optics";
+import { atom, useSetAtom } from "jotai";
 import { type FormItemText, textImpl } from "./FormItemText";
 import { type FormItemRadio, radioImpl } from "./FormItemRadio";
 import { type FormItemCheckbox, checkboxImpl } from "./FormItemCheckbox";
+import { Action, reducer } from "./reducer";
 
 export type FormItemImpl<
   Type extends string,
@@ -13,7 +12,10 @@ export type FormItemImpl<
 > = {
   type: Type;
   itemType?: ItemType;
-  tryRender: (itemAtom: PrimitiveAtom<FormItem>) => React.ReactNode;
+  tryRender: (
+    item: FormItem,
+    onChange: (item: FormItem) => void
+  ) => React.ReactNode;
   tryRenderUser: (item: FormItem) => React.ReactNode;
   initialValue: ItemType;
 };
@@ -24,18 +26,25 @@ export const formItemImpls = [
   checkboxImpl,
 ] as const satisfies readonly FormItemImpl<string, FormItem>[];
 
-type FormSchema = {
+export type FormSchema = {
   items: FormItem[];
 };
 export type FormItem = FormItemText | FormItemRadio | FormItemCheckbox;
 
 // state
-export const formSchemaAtom = atom<FormSchema>({
+const formSchemaAtom_ = atom<FormSchema>({
   items: [
     textImpl.initialValue,
     radioImpl.initialValue,
     checkboxImpl.initialValue,
   ],
 });
-const itemsAtom = focusAtom(formSchemaAtom, (optic) => optic.prop("items"));
-export const itemAtomsAtom = splitAtom(itemsAtom);
+
+export const formSchemaAtom = atom((get) => get(formSchemaAtom_));
+
+const dispatchAtom = atom(null, (get, set, action: Action) => {
+  set(formSchemaAtom_, reducer(get(formSchemaAtom_), action));
+});
+export function useDispatch() {
+  return useSetAtom(dispatchAtom);
+}

@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { TwoPane } from "./TwoPane";
 import { SchemaEditor } from "./SchemaEditor";
-import { formSchemaAtom, formItemImpls } from "./formSchemaAtom";
+import { formItemImpls, formSchemaAtom } from "./formSchemaAtom";
 
 function App() {
   return (

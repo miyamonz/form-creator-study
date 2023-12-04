@@ -1,38 +1,47 @@
-import { useAtom, PrimitiveAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useState } from "react";
-import { itemAtomsAtom, formItemImpls, FormItem } from "./formSchemaAtom";
+import {
+  formItemImpls,
+  FormItem,
+  useDispatch,
+  formSchemaAtom,
+} from "./formSchemaAtom";
 
 export function SchemaEditor() {
   return <ItemsView />;
 }
 function ItemsView() {
-  const [itemAtoms] = useAtom(itemAtomsAtom);
+  const [schema] = useAtom(formSchemaAtom);
+  const items = schema.items;
 
   return (
     <div>
       <h2 className="text-3xl">form editor</h2>
       <ul>
-        {itemAtoms.map((item, index) => (
-          <div key={index} className="relative [&:not(:first-child)]:mt-2">
-            <ItemView itemAtom={item} />
-            <div className="absolute top-0 right-0">
-              <RemoveButton itemAtom={item} />
+        {items.map((item, index) => {
+          return (
+            <div key={index} className="relative [&:not(:first-child)]:mt-2">
+              <ItemView item={item} index={index} />
+              <div className="absolute top-0 right-0">
+                <RemoveButton index={index} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </ul>
       <AddButton />
     </div>
   );
 }
-function RemoveButton({ itemAtom }: { itemAtom: PrimitiveAtom<FormItem> }) {
-  const [, dispatch] = useAtom(itemAtomsAtom);
+
+function RemoveButton({ index }: { index: number }) {
+  const dispatch = useDispatch();
 
   return (
     <button
       className=" bg-red-500 hover:bg-red-700 text-white font-bold w-8 aspect-square"
       onClick={() => {
-        dispatch({ type: "remove", atom: itemAtom });
+        dispatch({ type: "remove", index });
       }}
     >
       ✕
@@ -40,7 +49,7 @@ function RemoveButton({ itemAtom }: { itemAtom: PrimitiveAtom<FormItem> }) {
   );
 }
 function AddButton() {
-  const [, dispatch] = useAtom(itemAtomsAtom);
+  const dispatch = useDispatch();
 
   const [type, setType] =
     useState<(typeof formItemImpls)[number]["type"]>("text");
@@ -64,8 +73,8 @@ function AddButton() {
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick={() => {
           dispatch({
-            type: "insert",
-            value: currentInitialValue,
+            type: "add",
+            item: currentInitialValue,
           });
         }}
       >
@@ -74,8 +83,14 @@ function AddButton() {
     </>
   );
 }
-function ItemView({ itemAtom }: { itemAtom: PrimitiveAtom<FormItem> }) {
+function ItemView({ item, index }: { item: FormItem; index: number }) {
+  const dispatch = useDispatch();
+
+  const onChange = (update: FormItem) => {
+    dispatch({ type: "update", index, item: update });
+  };
+
   return formItemImpls
-    .map((impl) => impl.tryRender(itemAtom))
+    .map((impl) => impl.tryRender(item, onChange))
     .reduce((acc, elm) => acc ?? elm, null as React.ReactNode);
 }

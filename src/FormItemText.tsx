@@ -1,6 +1,4 @@
-import { useAtom, PrimitiveAtom } from "jotai";
 import { FormItem, FormItemImpl } from "./formSchemaAtom";
-import { castAtomType } from "./castAtomType";
 
 const typeName = "text" as const;
 export type FormItemText = {
@@ -15,15 +13,19 @@ const initialValue = {
   description: "説明",
 } as const satisfies FormItemText;
 
-function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = castAtomType<FormItemText>(typeName, itemAtom);
-  if (!anAtom) return null;
-  return <ItemViewText itemAtom={anAtom} />;
+function tryRender(item: FormItem, onChange: (item: FormItem) => void) {
+  if (item.type !== typeName) return null;
+
+  return <ItemViewText item={item} onChange={onChange} />;
 }
 
-function ItemViewText({ itemAtom }: { itemAtom: PrimitiveAtom<FormItemText> }) {
-  const [item, setItem] = useAtom(itemAtom);
-
+function ItemViewText({
+  item,
+  onChange,
+}: {
+  item: FormItemText;
+  onChange: (item: FormItemText) => void;
+}) {
   return (
     <div className="border-2 border-black p-2">
       <h3 className="text-xl">Title</h3>
@@ -31,9 +33,7 @@ function ItemViewText({ itemAtom }: { itemAtom: PrimitiveAtom<FormItemText> }) {
         className="text-2xl"
         type="text"
         value={item.title}
-        onChange={(e) =>
-          setItem((item) => ({ ...item, title: e.target.value }))
-        }
+        onChange={(e) => onChange({ ...item, title: e.target.value })}
         placeholder="title"
       />
       <br />
@@ -41,9 +41,7 @@ function ItemViewText({ itemAtom }: { itemAtom: PrimitiveAtom<FormItemText> }) {
       <input
         type="text"
         value={item.description}
-        onChange={(e) =>
-          setItem((item) => ({ ...item, description: e.target.value }))
-        }
+        onChange={(e) => onChange({ ...item, description: e.target.value })}
         placeholder="description"
       />
     </div>

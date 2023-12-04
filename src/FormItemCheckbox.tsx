@@ -1,9 +1,7 @@
 import { useMemo } from "react";
-import { useAtom, PrimitiveAtom } from "jotai";
+import { atom, useAtom, WritableAtom } from "jotai";
 import { FormItem, FormItemImpl } from "./formSchemaAtom";
-import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
-import { castAtomType } from "./castAtomType";
 
 const typeName = "checkbox" as const;
 
@@ -21,22 +19,26 @@ const initialValue = {
   choices: ["選択肢1"] as string[],
 } as const satisfies FormItemCheckbox;
 
-function tryRender(itemAtom: PrimitiveAtom<FormItem>) {
-  const anAtom = castAtomType<FormItemCheckbox>(typeName, itemAtom);
-  if (!anAtom) return null;
-  return <ItemViewCheckbox itemAtom={anAtom} />;
+function tryRender(item: FormItem, onChange: (item: FormItem) => void) {
+  if (item.type !== typeName) return null;
+  return <ItemViewCheckbox item={item} onChange={onChange} />;
 }
 
 function ItemViewCheckbox({
-  itemAtom,
+  item,
+  onChange,
 }: {
-  itemAtom: PrimitiveAtom<FormItemCheckbox>;
+  item: FormItemCheckbox;
+  onChange: (item: FormItemCheckbox) => void;
 }) {
-  const [item, setItem] = useAtom(itemAtom);
-
   const choicesAtom = useMemo(() => {
-    return focusAtom(itemAtom, (optic) => optic.prop("choices"));
-  }, [itemAtom]);
+    return atom(
+      () => item.choices,
+      (_get, _set, update: string[]) => {
+        onChange({ ...item, choices: update });
+      }
+    );
+  }, [item, onChange]);
 
   return (
     // text form with title and description, add tailwind classes
@@ -46,7 +48,7 @@ function ItemViewCheckbox({
         className="text-2xl"
         type="text"
         value={item.title}
-        onChange={(e) => setItem({ ...item, title: e.target.value })}
+        onChange={(e) => onChange({ ...item, title: e.target.value })}
         placeholder="title"
       />
       <br />
@@ -54,7 +56,7 @@ function ItemViewCheckbox({
       <input
         type="text"
         value={item.description}
-        onChange={(e) => setItem({ ...item, description: e.target.value })}
+        onChange={(e) => onChange({ ...item, description: e.target.value })}
         placeholder="description"
       />
 
@@ -67,7 +69,7 @@ function ItemViewCheckbox({
 function ChoicesView({
   choicesAtom,
 }: {
-  choicesAtom: PrimitiveAtom<string[]>;
+  choicesAtom: WritableAtom<string[], [string[]], void>;
 }) {
   const [choices, setChoices] = useAtom(choicesAtom);
   const choiceAtomsAtom = useMemo(() => splitAtom(choicesAtom), [choicesAtom]);
